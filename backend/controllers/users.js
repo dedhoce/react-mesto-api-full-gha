@@ -91,12 +91,7 @@ function login (req, res, next) {
 
       // вернём токен
       res.status(HTTP_STATUS_OK)
-      .cookie('jwt', token, {
-      // token - наш JWT токен, который мы отправляем
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        sameSite: true
-      })
+      .header({'token' : token})
       .send({ message : "Токен успешно отправлен в куки" })
       .end()
     })

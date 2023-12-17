@@ -111,8 +111,7 @@ function App() {
   function handleEnterUser({ email, password }) {
     callingBaseToServer({
       apiMetod: auth.getUserToken({email, password }),
-      thenCallback: (res) => {
-        console.log(res.body)        
+      thenCallback: (res) => {               
         if(res.token) {
           setUserAuthInfo({email})          
           localStorage.setItem('jwt', res.token)

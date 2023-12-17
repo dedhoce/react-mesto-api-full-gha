@@ -24,8 +24,7 @@ class Auth extends BaseApi {
     }     
     
     getUserToken({email, password}) {
-        return this._request('/signin', {
-            mode: 'no-cors',
+        return this._request('/signin', {            
             method: 'POST',
             headers: this._headers,
             body: JSON.stringify({
