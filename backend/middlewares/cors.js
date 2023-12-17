@@ -2,7 +2,7 @@
 const allowedCors = [
   'https://praktikum.tk',
   'http://praktikum.tk',
-  'localhost:3000'
+  'http://localhost:3000/react-mesto-auth'
 ];
 
 module.exports = function(req, res, next) {

@@ -77,9 +77,8 @@ class Api extends BaseApi{
 }
 
 const api = new Api({
-  baseUrl: "https://mesto.nomoreparties.co/v1/cohort-75",
-  headers: {
-    authorization: "6a605e63-1774-4c5f-989e-07adc5e69a71",
+  baseUrl: "http://mesto.amelitskov.nomoredomainsmonster.ru",
+  headers: {    
     "Content-Type": "application/json",
   },
 });
