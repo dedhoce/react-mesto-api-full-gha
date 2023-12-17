@@ -90,9 +90,8 @@ function login (req, res, next) {
         { expiresIn: '7d' });
 
       // вернём токен
-      res.status(HTTP_STATUS_OK)
-      .header({'token' : token})
-      .send({ message : "Токен успешно отправлен в куки" })
+      res.status(HTTP_STATUS_OK)      
+      .send({ token : token })
       .end()
     })
     .catch(next);
