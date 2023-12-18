@@ -56,12 +56,14 @@ function App() {
   /** Получаем данные с сервера по объединенному запросу и записываем ответы в глобальные стэйты. */
   useEffect(() => {   
     loggedIn && Promise.all([
-      api.getInitialCards(),
-      api.getUserInfo()    
+      api.getInitialCards(localStorage.getItem('jwt')),
+      api.getUserInfo(localStorage.getItem('jwt'))    
     ])
       .then(([initialCards, userInformation]) => {        
-        setCurrentUser(userInformation)                                                               
-        setCards(initialCards)           
+        setCurrentUser(userInformation)
+        // полученный массив карточек разворачиваем, чтоб актуальные были первыми
+        const revertCards = initialCards.reverse()                                                               
+        setCards(revertCards)           
       })             
       .catch((err) => {
         console.log(err); 
@@ -70,9 +72,9 @@ function App() {
   
   /** Проверяем наличие нашего лайка, по нему определяем в Api какой запрос отправить лайк или дизлайк. */
   function handleCardLike(card) {   
-    const isLiked = card.likes.some(i => i._id === currentUser._id);  
+    const isLiked = card.likes.some(i => i === currentUser._id);  
     callingBaseToServer({
-      apiMetod: api.changeLikeCardStatus(card._id, !isLiked),
+      apiMetod: api.changeLikeCardStatus(card._id, !isLiked, localStorage.getItem('jwt')),
       thenCallback: (newCard) => {        
         setCards((state) => state.map((c) => c._id === card._id ? newCard : c));       
       },
@@ -83,7 +85,7 @@ function App() {
     *  ответ с новыми данными записываем в глобальный стэйт. */
   function handleUpdateUser({ name, about }) {
     callingBaseToServer({
-      apiMetod: api.pushUserInfo({name, about}),
+      apiMetod: api.pushUserInfo({name, about}, localStorage.getItem('jwt')),
       thenCallback: (userInformation) => {        
         setCurrentUser(userInformation)
         closeAllPopups()       
@@ -135,7 +137,7 @@ function App() {
         apiMetod: auth.checkUserToken(localJWT),
         thenCallback: (res) => {        
           if (res){          
-            setUserAuthInfo(res.data)
+            setUserAuthInfo(res)
             handleLogin();          
             navigate("/", {replace: true})
           }       
@@ -173,7 +175,7 @@ function App() {
     * полученный ответ записываем в глобальный стэйт. */
   function handleUpdateAvatar(avatarUrl) {
     callingBaseToServer({
-      apiMetod: api.pushAvatar(avatarUrl),
+      apiMetod: api.pushAvatar(avatarUrl, localStorage.getItem('jwt')),
       thenCallback: (newAvatar) => {        
         setCurrentUser(newAvatar);
         closeAllPopups()
@@ -185,7 +187,7 @@ function App() {
     * полученную карточку подгружаем в глобальный стэйт. */
   function handleAddCard({name, url}) {
     callingBaseToServer({
-      apiMetod: api.pushInfoCreateCard({name, url}),
+      apiMetod: api.pushInfoCreateCard({name, url}, localStorage.getItem('jwt')),
       thenCallback: (newCard) => {        
         setCards([newCard, ...cards])
         closeAllPopups()
@@ -197,7 +199,7 @@ function App() {
     * в глобальном стэйте по id и возврящаем все кроме той что удалили. */
   function handleCardDelete(cardId) {
     callingBaseToServer({
-      apiMetod: api.deleteCard(cardId),
+      apiMetod: api.deleteCard(cardId, localStorage.getItem('jwt')),
       thenCallback: () => {        
         setCards((cards) => cards.filter(item => {          
           return item._id !== cardId

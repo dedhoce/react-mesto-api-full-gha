@@ -20,11 +20,12 @@ module.exports = function(req, res, next) {
   if (allowedCors.includes(origin)) {
 
     // устанавливаем заголовок, который разрешает браузеру запросы с этого источника
-    //res.header('Access-Control-Allow-Origin', origin);
-
-    // устанавливаем заголовок, который разрешает браузеру запросы из любого источника
-    res.header('Access-Control-Allow-Origin', "*");
+    res.header('Access-Control-Allow-Origin', origin);
+    
   }
+
+  // устанавливаем заголовок, который разрешает браузеру запросы из любого источника
+  //res.header('Access-Control-Allow-Origin', "*");
 
   // Если это предварительный запрос, добавляем нужные заголовки
   if (method === 'OPTIONS') {

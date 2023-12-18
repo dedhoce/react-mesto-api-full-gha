@@ -2,16 +2,23 @@ import { BaseApi } from "./BaseApi";
 
 class Api extends BaseApi{ 
 
-  getUserInfo() {    
+  _getHeaders(localJWT) {
+    return {
+      "Content-Type": "application/json",
+      "Authorization" : `Bearer ${localJWT}`
+  }
+  }
+
+  getUserInfo(localJWT) {    
     return this._request('/users/me', {
-      headers: this._headers      
+      headers: this._getHeaders(localJWT)      
     })                
   }  
 
-  pushUserInfo({name, about}) {    
+  pushUserInfo({name, about}, localJWT) {    
     return this._request('/users/me', {
       method: 'PATCH',
-      headers: this._headers,
+      headers: this._getHeaders(localJWT),
       body: JSON.stringify({
         name,
         about
@@ -19,34 +26,34 @@ class Api extends BaseApi{
     })    
   }
 
-  pushAvatar({avatar}) {
+  pushAvatar({avatar}, localJWT) {
     console.log(avatar)        
     return this._request('/users/me/avatar', {
       method: 'PATCH',
-      headers: this._headers,
+      headers: this._getHeaders(localJWT),
       body: JSON.stringify({
         avatar: avatar        
       })
     })     
   }
 
-  getInitialCards() {    
+  getInitialCards(localJWT) {    
     return this._request('/cards', {
-      headers: this._headers      
+      headers: this._getHeaders(localJWT)      
     })                
   }
 
-  deleteCard(cardId) {
+  deleteCard(cardId, localJWT) {
     return this._request(`/cards/${cardId}`, {
       method: 'DELETE',
-      headers: this._headers      
+      headers: this._getHeaders(localJWT)      
     })    
   }
 
-  pushInfoCreateCard({name, url}) {    
+  pushInfoCreateCard({name, url}, localJWT) {    
     return this._request('/cards', {
       method: 'POST',
-      headers: this._headers,
+      headers: this._getHeaders(localJWT),
       body: JSON.stringify({
         name: name,
         link: url         
@@ -54,33 +61,30 @@ class Api extends BaseApi{
     })    
   }  
 
-  _likeCard(cardId) {
+  _likeCard(cardId, localJWT) {
     return this._request(`/cards/${cardId}/likes`, {
       method: 'PUT',
-      headers: this._headers      
+      headers: this._getHeaders(localJWT)      
     })      
   }
 
-  _deleteLikeCard(cardId) {
+  _deleteLikeCard(cardId, localJWT) {
     return this._request(`/cards/${cardId}/likes`, {
       method: 'DELETE',
-      headers: this._headers      
+      headers: this._getHeaders(localJWT)      
     })    
   }
 
-  changeLikeCardStatus(cardId, likeStatus) {
+  changeLikeCardStatus(cardId, likeStatus, localJWT) {
     if(likeStatus) {
-      return this._likeCard(cardId)
+      return this._likeCard(cardId, localJWT)
     }
-    return this._deleteLikeCard(cardId)
+    return this._deleteLikeCard(cardId, localJWT)
   } 
 }
 
 const api = new Api({
-  baseUrl: "http://mesto.amelitskov.nomoredomainsmonster.ru",
-  headers: {    
-    "Content-Type": "application/json",
-  },
+  baseUrl: "http://mesto.amelitskov.nomoredomainsmonster.ru"  
 });
 
 export default api
