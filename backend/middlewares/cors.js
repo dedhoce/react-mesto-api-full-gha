@@ -2,7 +2,10 @@
 const allowedCors = [
   'https://praktikum.tk',
   'http://praktikum.tk',
-  'http://mesto.amelitskov.nomoredomainsmonster.ru'
+  'http://mesto.amelitskov.nomoredomainsmonster.ru',
+  'https://mesto.amelitskov.nomoredomainsmonster.ru',
+  'http://localhost:3001',
+  'http://localhost:3000'
 ];
 
 module.exports = function(req, res, next) {
@@ -21,7 +24,7 @@ module.exports = function(req, res, next) {
 
     // устанавливаем заголовок, который разрешает браузеру запросы с этого источника
     res.header('Access-Control-Allow-Origin', origin);
-    
+
   }
 
   // устанавливаем заголовок, который разрешает браузеру запросы из любого источника

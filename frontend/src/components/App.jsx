@@ -99,8 +99,9 @@ function App() {
   function handleRegisterUser({ email, password }) {
     callingBaseToServer({
       apiMetod: auth.regisrationNewUser({email, password}),
-      thenCallback: (res) => {        
-        if(!res.ok) {
+      thenCallback: (res) => {
+        // res - объект с пользователем, поэтому проверяем через элемент этого обьекта _id     
+        if(!res._id) {
           return Promise.reject(`Ошибка: ${res.status}`)            
         }
         setInfoTooltip({title: 'Вы успешно зарегестрировались!', img: 'Union.png'})        
