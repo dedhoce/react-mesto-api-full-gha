@@ -42,8 +42,8 @@ function ComponentWithForm({ nameForm, setUserInfo }) {
         onClick={() => resetForm({...values, password: ''}, {}, false)}
         isValid={isValid}
         errors={errors.password}
-        minLength=''
-        maxLength=''
+        minLength='8'
+        maxLength='30'
       />       
       <button
           type="submit"
