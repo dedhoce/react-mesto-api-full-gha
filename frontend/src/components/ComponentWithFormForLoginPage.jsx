@@ -42,7 +42,7 @@ function ComponentWithForm({ nameForm, setUserInfo }) {
         onClick={() => resetForm({...values, password: ''}, {}, false)}
         isValid={isValid}
         errors={errors.password}
-        minLength=''
+        minLength='8'
         maxLength=''
       />       
       <button
