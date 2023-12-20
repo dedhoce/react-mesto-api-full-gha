@@ -1,19 +1,16 @@
-require('dotenv').config();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const userModel = require("../models/user");
+const conf = require("../config/app");
 
 const {
-  HTTP_STATUS_OK,                   // 200
-  HTTP_STATUS_CREATED               // 201
-} = require('../utils/constantsStatusCode')
+  HTTP_STATUS_OK, // 200
+  HTTP_STATUS_CREATED // 201
+} = require("../utils/constantsStatusCode");
 
 function getUser(req, res, next) {
-
-  const { userId } = req.params;
-  console.log(userId)
   return userModel
-    .findById(userId)
+    .findById(req.params.userId)
     .orFail()
     .then((user) => {
       return res.status(HTTP_STATUS_OK).send(user);
@@ -21,19 +18,20 @@ function getUser(req, res, next) {
     .catch(next);
 }
 
-function getOwnUser(req, res, next) {
-
-  return userModel
-    .findById(req.user._id)
-    .orFail()
-    .then((user) => {
-      return res.status(HTTP_STATUS_OK).send(user);
-    })
-    .catch(next);
+function getUserDecorator(func) {
+  return function (req, res, next) {
+    if (req.url === "/me") {
+      req.params.userId = req.user._id;
+      return func(req, res, next);
+    }
+    return func(req, res, next);
+  };
 }
+
+const getUserById = getUserDecorator(getUser);
+const getOwnUser = getUserDecorator(getUser);
 
 function getAllUsers(req, res, next) {
-
   return userModel
     .find()
     .then((users) => {
@@ -43,42 +41,42 @@ function getAllUsers(req, res, next) {
 }
 
 function createUser(req, res, next) {
-  const {email, password, name, about, avatar} = req.body;
+  const {
+    email, password, name, about, avatar
+  } = req.body;
 
   return bcrypt.hash(password, 10)
     .then((hash) => {
       userModel
-      .create({
-        email,
-        password: hash,
-        name,
-        about,
-        avatar
-      })
-      .then(({
-        _id,
-        email,
-        name,
-        about,
-        avatar
-      }) => {
-
-        return res.status(HTTP_STATUS_CREATED).send({
+        .create({
+          email,
+          password: hash,
+          name,
+          about,
+          avatar
+        })
+        .then(({
           _id,
           email,
           name,
           about,
           avatar
-        });
-      })
-      .catch(next)
+        }) => {
+          return res.status(HTTP_STATUS_CREATED).send({
+            _id,
+            email,
+            name,
+            about,
+            avatar
+          });
+        })
+        .catch(next);
     })
     .catch(next);
 }
 
-function login (req, res, next) {
+function login(req, res, next) {
   const { email, password } = req.body;
-  const { NODE_ENV, JWT_SECRET } = process.env;
 
   return userModel.findUserByCredentials(email, password)
     .then((user) => {
@@ -86,16 +84,17 @@ function login (req, res, next) {
       // создадим токен
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' });
+        conf.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
 
       // вернём токен
-      res.status(HTTP_STATUS_OK)      
-      .send({ token : token })
-      .end()
+      res.status(HTTP_STATUS_OK)
+        .send({ token: token })
+        .end();
     })
     .catch(next);
-};
+}
 
 function updateUserData(req, res, next) {
   const userId = req.user._id;
@@ -103,54 +102,30 @@ function updateUserData(req, res, next) {
   return userModel
     .findByIdAndUpdate(userId, req.body, {
       runValidators: true,
-      returnDocument: 'after'
+      returnDocument: "after"
     })
     .orFail()
     .then((user) => {
-      console.log('then')
       return res.status(HTTP_STATUS_OK).send(user);
     })
-    .catch(next)
+    .catch(next);
 }
 
 function updatingInfoDecorator(func) {
-
-  return function(req, res) {
-    let { name, about } = req.body
-    if (name || about) {
-      req.body = { name, about }
-      return func(req, res)
-    } else {
-      req.body = {name : '', about: ''}
-      return func(req, res)
-    }
-  }
+  return function (req, res) {
+    return func(req, res);
+  };
 }
 
-function updatingAvatarDecorator(func) {
-
-  return function(req, res) {
-    let { avatar } = req.body
-    if (avatar) {
-      req.body = { avatar }
-      return func(req, res)
-    } else {
-      req.body = {avatar: ''}
-      return func(req, res)
-    }
-  }
-}
-
-const updateInfo = updatingInfoDecorator(updateUserData)
-const updateAvatar = updatingAvatarDecorator(updateUserData)
+const updateInfo = updatingInfoDecorator(updateUserData);
+const updateAvatar = updatingInfoDecorator(updateUserData);
 
 module.exports = {
   createUser,
   login,
   getAllUsers,
-  getUser,
+  getUserById,
   getOwnUser,
   updateInfo,
   updateAvatar
 };
-

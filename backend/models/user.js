@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 
-const { NocorrectlyPswdOrEmail } = require('../utils/ErrorClass')
+const { NocorrectlyPswdOrEmail } = require("../utils/ErrorClass");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -13,43 +13,43 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      select: false //Так по умолчанию хеш пароля пользователя не будет возвращаться из базы
+      select: false // Так по умолчанию хеш пароля пользователя не будет возвращаться из базы
     },
     name: {
       type: String,
       minLength: 2,
       maxLength: 30,
-      default: 'Жак-Ив Кусто'
+      default: "Жак-Ив Кусто"
     },
     about: {
       type: String,
       minLength: 2,
       maxLength: 30,
-      default: 'Исследователь'
+      default: "Исследователь"
     },
     avatar: {
       type: String,
-      default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'
-    },
+      default: "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
+      match: /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i
+    }
   },
   {
-    versionKey: false,
+    versionKey: false
   }
 );
 
 UserSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email })
-    .select('+password')
+    .select("+password")
     .then((user) => {
-
       if (!user) {
-        throw new NocorrectlyPswdOrEmail('Неправильные почта или пароль');
+        throw new NocorrectlyPswdOrEmail("Неправильные почта или пароль");
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            throw new NocorrectlyPswdOrEmail('Неправильные почта или пароль');
+            throw new NocorrectlyPswdOrEmail("Неправильные почта или пароль");
           }
 
           return user;

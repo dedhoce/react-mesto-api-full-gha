@@ -1,12 +1,11 @@
 const cardModel = require("../models/card");
-const mongoose = require("mongoose");
 
 const {
-  HTTP_STATUS_OK,                   // 200
-  HTTP_STATUS_CREATED             // 201
-} = require('../utils/constantsStatusCode')
+  HTTP_STATUS_OK, // 200
+  HTTP_STATUS_CREATED // 201
+} = require("../utils/constantsStatusCode");
 
-const { AlienCard } = require('../utils/ErrorClass')
+const { AlienCard } = require("../utils/ErrorClass");
 
 function getAllCards(req, res, next) {
   return cardModel
@@ -37,20 +36,20 @@ function deleteCard(req, res, next) {
     .orFail()
     .then((card) => {
       try {
-        if(card.owner.valueOf() === req.user._id) {
+        if (card.owner.valueOf() === req.user._id) {
           return cardModel
             .deleteOne({ _id: cardId })
-            .then((card) => {
-              return res.status(HTTP_STATUS_OK).send(card);
+            .then((cardDeleted) => {
+              return res.status(HTTP_STATUS_OK).send(cardDeleted);
             })
             .catch(next);
         }
-        throw new AlienCard('Можно удалять только свои карточки!')
+        throw new AlienCard("Можно удалять только свои карточки!");
       } catch (err) {
-        next(err)
+        next(err);
       }
     })
-    .catch(next)
+    .catch(next);
 }
 
 function toggleLikeCard(req, res, methodObj, next) {
@@ -60,7 +59,7 @@ function toggleLikeCard(req, res, methodObj, next) {
     .findByIdAndUpdate(
       cardId,
       methodObj, // добавить _id в массив, если его там нет
-      { new: true },
+      { new: true }
     )
     .orFail()
     .then((card) => {
@@ -70,25 +69,25 @@ function toggleLikeCard(req, res, methodObj, next) {
 }
 
 function togglelikeCardDecorator(func) {
-
-  return function(req, res, next) {
-    if (req.method === 'PUT') {
-      return func(req, res, { $addToSet: { likes: req.user._id } }, next) // добавить _id в массив, если его там нет
+  return function (req, res, next) {
+    if (req.method === "PUT") {
+      // добавить _id в массив, если его там нет
+      return func(req, res, { $addToSet: { likes: req.user._id } }, next);
     }
-    if (req.method === 'DELETE') {
-      return func(req, res, { $pull: { likes: req.user._id } }, next)   // убрать _id из массива
+    if (req.method === "DELETE") {
+      // убрать _id из массива
+      return func(req, res, { $pull: { likes: req.user._id } }, next);
     }
-  }
+  };
 }
 
-const likeCard = togglelikeCardDecorator(toggleLikeCard)
-const deleteLikeCard = togglelikeCardDecorator(toggleLikeCard)
-
+const likeCard = togglelikeCardDecorator(toggleLikeCard);
+const deleteLikeCard = togglelikeCardDecorator(toggleLikeCard);
 
 module.exports = {
   getAllCards,
   createCard,
   deleteCard,
   likeCard,
-  deleteLikeCard,
+  deleteLikeCard
 };

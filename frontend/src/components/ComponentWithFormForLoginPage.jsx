@@ -43,7 +43,7 @@ function ComponentWithForm({ nameForm, setUserInfo }) {
         isValid={isValid}
         errors={errors.password}
         minLength='8'
-        maxLength=''
+        maxLength='30'
       />       
       <button
           type="submit"
