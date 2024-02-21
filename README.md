@@ -9,8 +9,8 @@
 
 ## Ссылки на проект
 
-IP 158.160.97.139
+IP 158.160.56.216
 
-Frontend https://mesto.amelitskov.nomoredomainsmonster.ru
+Frontend https://mesto.amelitskov.nomoredomainswork.ru
 
-Backend https://api.mesto.amelitskov.nomoredomainsmonster.ru
+Backend https://api.mesto.amelitskov.nomoredomainswork.ru

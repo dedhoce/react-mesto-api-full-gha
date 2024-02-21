@@ -84,7 +84,7 @@ class Api extends BaseApi{
 }
 
 const api = new Api({
-  baseUrl: "https://api.mesto.amelitskov.nomoredomainsmonster.ru",
+  baseUrl: "https://api.mesto.amelitskov.nomoredomainswork.ru",
   //baseUrl: 'http://localhost:3000',  
 });
 

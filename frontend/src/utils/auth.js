@@ -36,7 +36,7 @@ class Auth extends BaseApi {
 
 }  
   const auth = new Auth({
-    baseUrl: "https://api.mesto.amelitskov.nomoredomainsmonster.ru",
+    baseUrl: "https://api.mesto.amelitskov.nomoredomainswork.ru",
     //baseUrl: 'http://localhost:3000',
     headers: {      
       "Content-Type": "application/json",
